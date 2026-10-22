@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#70aec9">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-FjqL70wkhQiAureV2f5aI5TEZAPgVT+59+/Q7rsdrCo='; style-src 'unsafe-inline'; img-src data: https://server.arcgisonline.com; connect-src https://api.weather.gov https://api.tidesandcurrents.noaa.gov https://marine-api.open-meteo.com https://www.ndbc.noaa.gov https://gis.ngdc.noaa.gov; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-GJq1qcnKi0ws0fgySIxQzFESkv3TufT25FRyJmRY42g='; style-src 'unsafe-inline'; img-src data: https://server.arcgisonline.com; connect-src https://api.weather.gov https://api.tidesandcurrents.noaa.gov https://marine-api.open-meteo.com https://www.ndbc.noaa.gov https://gis.ngdc.noaa.gov; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="application-version" content="1.3">
 <title>Surf Report · Eastern Long Island</title>
@@ -38,7 +38,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--dark);outl
 .col small{font-size:11px;font-weight:700;margin-left:4px;letter-spacing:.02em;line-height:24px}
 .col svg{display:block}
 .arr{transition:transform .2s}
-.tl{position:absolute;left:24px;bottom:214px;pointer-events:none;color:var(--light)}
+.tl{position:absolute;left:24px;bottom:199px;pointer-events:none;color:var(--light)}
 .time{font-size:22px;line-height:1;font-weight:400}
 .time small{font-size:11px;font-weight:700;margin-left:2px}
 .dlab{margin-top:13px;font-size:11.5px;font-weight:700;letter-spacing:.01em;line-height:1}
@@ -567,7 +567,7 @@ function rate(sp,hr){
 }
 
 /* ---------- Render (phone UI) ---------- */
-var CHH=190,CHB=30,YB=152,BARH=110,TAMP=29,LX=14,stp=5,sel=0,pos=0,tmin=0,tmax=1,dayEls=[];
+var CHH=190,CHB=15,YB=152,BARH=110,TAMP=29,LX=14,stp=5,sel=0,pos=0,tmin=0,tmax=1,dayEls=[];
 var FN={wd:'Wind Direction',ws:'Wind Speed',pp:'Swell Period',pd:'Swell Direction',ph:'Swell Height',sec:'Second Swell',tide:'Tide'};
 var DISP={trailer:'Trailer\nPark',ditch:'Ditch\nPlains',white:'White\nSands',napeague:'Napeague\nBeach',georgica:'Georgica\nBeach',gibson:'Gibson\nBeach',sagg:'Sagg\nMain'};
 function dn(sp){return DISP[sp.id]||sp.name;}
