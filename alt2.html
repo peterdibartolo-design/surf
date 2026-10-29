@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#70aec9">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-H2bUlfgdYQYwnXSyoFXD0j0dYGL0yjSwYkM8Y+dJjmc='; style-src 'unsafe-inline'; img-src data: https://server.arcgisonline.com; connect-src https://api.weather.gov https://api.tidesandcurrents.noaa.gov https://marine-api.open-meteo.com https://www.ndbc.noaa.gov https://gis.ngdc.noaa.gov; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-/zkvKWIKeMkOyqdvVXDkngBDbDSo2cOt+WaqqNfaUZ8='; style-src 'unsafe-inline'; img-src data: https://server.arcgisonline.com; connect-src https://api.weather.gov https://api.tidesandcurrents.noaa.gov https://marine-api.open-meteo.com https://www.ndbc.noaa.gov https://gis.ngdc.noaa.gov; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="application-version" content="2.0">
 <title>Surf Report · Eastern Long Island</title>
@@ -38,7 +38,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--dark);outl
 .col small{font-size:11px;font-weight:700;margin-left:4px;letter-spacing:.02em;line-height:24px}
 .col svg{display:block}
 .arr{transition:transform .2s}
-.tl{position:absolute;left:24px;bottom:179px;pointer-events:none;color:var(--light)}
+.tl{position:absolute;left:24px;bottom:159px;pointer-events:none;color:var(--light)}
 .time{font-size:22px;line-height:1;font-weight:400}
 .time small{font-size:11px;font-weight:700;margin-left:2px}
 .dlab{margin-top:13px;font-size:11.5px;font-weight:700;letter-spacing:.01em;line-height:1}
@@ -567,7 +567,7 @@ function rate(sp,hr){
 }
 
 /* ---------- Render (phone UI) ---------- */
-var CHH=190,CHB=-5,YB=152,BARH=110,TAMP=29,LX=14,stp=5,sel=0,pos=0,tmin=0,tmax=1,dayEls=[];
+var CHH=190,CHB=-25,YB=152,BARH=110,TAMP=29,LX=14,stp=5,sel=0,pos=0,tmin=0,tmax=1,dayEls=[];
 var FN={wd:'Wind Direction',ws:'Wind Speed',pp:'Swell Period',pd:'Swell Direction',ph:'Swell Height',sec:'Second Swell',tide:'Tide'};
 var DISP={trailer:'Trailer\nPark',ditch:'Ditch\nPlains',white:'White\nSands',napeague:'Napeague\nBeach',georgica:'Georgica\nBeach',gibson:'Gibson\nBeach',sagg:'Sagg\nMain'};
 function dn(sp){return DISP[sp.id]||sp.name;}
@@ -585,11 +585,11 @@ function render(){
 function placeContent(){var g=geo();$('hcontent').style.top=Math.round(g.cy+g.R+1-29)+'px';}
 function layout(){if(!D)return;placeContent();renderMap();buildChart();renderDialed();}
 function lonLatTile(lat,lon,z){var n=Math.pow(2,z),x=(lon+180)/360*n,la=lat*RAD,y=(1-Math.log(Math.tan(la)+1/Math.cos(la))/Math.PI)/2*n;return {x:x,y:y};}
-/* hero fits the visible viewport: the diagram radius is solved so the location/weather stack ends 30 px above the time label (201 = .tl bottom 179 + 22 time line) */
+/* hero fits the visible viewport: the diagram radius is solved so the location/weather stack ends 30 px above the time label (181 = .tl bottom 159 + 22 time line) */
 function geo(){
   var hero=$('hero'),W=hero.clientWidth,Hh=hero.clientHeight,nb=$('nameBtn');
   var stack=nb.offsetTop+nb.offsetHeight+4+72+2+87;
-  var T=Hh-201-30-stack,R=clamp((T+28)/2.78,W*0.12,W*0.226);
+  var T=Hh-181-30-stack,R=clamp((T+28)/2.78,W*0.12,W*0.226);
   return {W:W,R:R,cx:W*0.939-R,cy:R*1.78};
 }
 /* map: ArcGIS light gray canvas, tinted #8ED8F8 (multiply), selected spot centred under the diagram */
