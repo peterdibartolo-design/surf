@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#70aec9">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-RwqIyS++spTmM2ybBFxyBD3IRbClWEAXkcigrBoMVnQ='; style-src 'unsafe-inline'; img-src data: https://server.arcgisonline.com; connect-src https://api.weather.gov https://api.tidesandcurrents.noaa.gov https://marine-api.open-meteo.com https://www.ndbc.noaa.gov https://gis.ngdc.noaa.gov; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-kpT6X5rVau4xmOGei+E9uZOdhArZksaAdkqFXOKxOd4='; style-src 'unsafe-inline'; img-src data: https://server.arcgisonline.com; connect-src https://api.weather.gov https://api.tidesandcurrents.noaa.gov https://marine-api.open-meteo.com https://www.ndbc.noaa.gov https://gis.ngdc.noaa.gov; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="application-version" content="2.0">
 <title>Surf Report · Eastern Long Island</title>
@@ -630,7 +630,7 @@ function buildChart(){
   var sb=W/390*0.2,stt=(W-LX-6)/1095,px0=(N-0.5)*stp;
   /* No Parking sign (88x339 art, pole centre at x=40) stands under the fixed line at the last hour, left of the truck */
   var sgH=824*sb*0.8*0.9*1.05,sgS=sgH/339;
-  var tw=908*stt*0.75*1.1,th=tw*184/507;/* truck: 75% of its former width, bottom-left anchored, 5 px below flush */
+  var tw=908*stt*0.75*1.1*1.1,th=tw*184/507;/* truck: 75% of its former width, bottom-left anchored, 5 px below flush */
   svg.appendChild(g);
   /* truck: own layer moving PAR x faster than the chart (parallax); at the last hour it rests exactly where it would without parallax */
   truckG=S('g',{id:'truckG'});txEnd=LX-(N-0.5)*stp;
