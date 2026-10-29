@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#70aec9">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-kpT6X5rVau4xmOGei+E9uZOdhArZksaAdkqFXOKxOd4='; style-src 'unsafe-inline'; img-src data: https://server.arcgisonline.com; connect-src https://api.weather.gov https://api.tidesandcurrents.noaa.gov https://marine-api.open-meteo.com https://www.ndbc.noaa.gov https://gis.ngdc.noaa.gov; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-mXeDLpSOJjL/Tc2hTehCJhXg2RhmC0vKsK9hwqq33U0='; style-src 'unsafe-inline'; img-src data: https://server.arcgisonline.com; connect-src https://api.weather.gov https://api.tidesandcurrents.noaa.gov https://marine-api.open-meteo.com https://www.ndbc.noaa.gov https://gis.ngdc.noaa.gov; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="application-version" content="2.0">
 <title>Surf Report · Eastern Long Island</title>
@@ -64,6 +64,24 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--dark);outl
 .oc .tx{font-size:11px;line-height:1.16;font-weight:700;min-width:0}
 .oc .rb{flex:none;min-width:35px;height:22px;line-height:22px;padding:0 4px;text-align:center;border-radius:5px;color:#fff;font-size:17px;font-weight:700}
 /* details */
+.dt{display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:6px;padding:16px 0 14px;border-top:1px solid var(--rule);font-size:17px;font-weight:700;color:var(--dark)}
+.dt .x{font-size:30px;line-height:1;font-weight:400;transition:transform .2s;transform:rotate(45deg)}
+.dt[aria-expanded=true] .x{transform:none}
+.dpanel{background:var(--dark);color:var(--light);margin:0 -24px;padding:6px 24px 40px}
+.dpanel[hidden]{display:none}
+.dsec{border-top:1px solid var(--light);padding:22px 0 40px}
+.dsec:first-child{margin-top:20px}
+.dsec h3{margin:0 0 18px;font-size:16px;line-height:1.2;font-weight:700}
+.dsec p{margin:0 0 14px;font-size:13px;line-height:1.35}
+.dsec p.m{color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.25}
+th{color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.03em;text-align:left;padding:0 0 6px;text-transform:uppercase}
+td{padding:7px 4px 7px 0;border-top:1px solid rgba(236,236,236,.22);vertical-align:top}
+th.n,td.n{text-align:right;padding-right:8px}
+th.n:last-child,td.n:last-child{padding-right:0}
+td.dot{text-align:right;padding-right:0}
+td.dot i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle}
+td small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
 /* menu */
 .menu{position:fixed;inset:0;z-index:20;background:rgba(20,34,45,.97);overflow:auto;-webkit-overflow-scrolling:touch}
 .menu[hidden]{display:none}
@@ -73,7 +91,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--dark);outl
 .menu li button{display:block;width:100%;padding:11px 0;font-size:36px;line-height:1.1;font-weight:700;color:var(--light);letter-spacing:-.01em}
 .menu li button[aria-current=true]{color:var(--water)}
 .menu li button:focus-visible{outline-color:var(--light)}
-@media(prefers-reduced-motion:reduce){.arr,.hcontent{transition:none}}
+@media(prefers-reduced-motion:reduce){.arr,.dt .x,.hcontent{transition:none}}
 </style>
 </head>
 <body>
@@ -108,6 +126,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--dark);outl
 <main class="sheet">
   <section aria-labelledby="h-cond"><h2 id="h-cond">Conditions</h2><div class="alerts" id="alerts"></div><ul class="why" id="why"></ul></section>
   <section class="ol" aria-labelledby="h-out"><h2 id="h-out">Outlook</h2><div class="ohd"><div>6 AM</div><div>12 PM</div><div>6 PM</div></div><div id="outlook"></div></section>
+  <section aria-label="Details">
+    <button class="dt" id="dtog" type="button" aria-expanded="false" aria-controls="dpanel"><span>Details</span><span class="x" aria-hidden="true">×</span></button>
+    <div class="dpanel" id="dpanel" hidden></div>
+  </section>
 </main>
 </div>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Select surf spot" hidden><div class="menu-in"><button class="mclose" id="mclose" type="button" aria-label="Close">×</button><ul id="mlist"></ul></div></div>
@@ -545,6 +567,7 @@ function rate(sp,hr){
 
 /* ---------- Render (phone UI) ---------- */
 var CHH=190,CHB=-25,YB=152,BARH=110,TAMP=29,LX=14,stp=5,sel=0,pos=0,tmin=0,tmax=1,dayEls=[];
+var FN={wd:'Wind Direction',ws:'Wind Speed',pp:'Swell Period',pd:'Swell Direction',ph:'Swell Height',sec:'Second Swell',tide:'Tide'};
 var DISP={trailer:'Trailer\nPark',ditch:'Ditch\nPlains',white:'White\nSands',napeague:'Napeague\nBeach',georgica:'Georgica\nBeach',gibson:'Gibson\nBeach',sagg:'Sagg\nMain'};
 function dn(sp){return DISP[sp.id]||sp.name;}
 function dialData(i){return i===D.i0?{x:D.cur,R:D.R}:{x:D.hours[i],R:ratings[i]};}
@@ -578,7 +601,7 @@ function renderMap(){
   for(var j=-nu;j<=nd;j++)for(var i=-nl;i<=nr;i++){
     var im=document.createElement('img');im.alt='';im.decoding='async';im.referrerPolicy='no-referrer';
     im.style.left=(g.cx+(i-fx)*TS)+'px';im.style.top=(g.cy+(j-fy)*TS)+'px';
-    im.addEventListener('load',function(){if(D.mapRow.state!=='ok'){D.mapRow.state='ok';D.mapRow.note='';D.mapRow.updated=Date.now();}});
+    im.addEventListener('load',function(){if(D.mapRow.state!=='ok'){D.mapRow.state='ok';D.mapRow.note='';D.mapRow.updated=Date.now();if(!$('dpanel').hidden){var d=dialData(sel);renderDetails(d.R,d.x);}}});
     im.addEventListener('error',function(){this.style.display='none';});
     im.src='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/'+z+'/'+(ty+j)+'/'+(tx+i);
     box.appendChild(im);
@@ -681,6 +704,7 @@ function renderDialed(){
   var tm=fmtT(ms,false).split(/[\s ]+/),tl=$('time');clear(tl);tl.appendChild(document.createTextNode(tm[0]));if(tm[1])tl.appendChild(h('small',null,tm[1]));
   var dl=$('dial');dl.setAttribute('aria-valuenow',sel);dl.setAttribute('aria-valuetext',fmtWd(ms)+' '+fmtT(ms,false)+', rating '+f1(R.rating));
   renderDiagram(x);renderWhy(R);
+  if(!$('dpanel').hidden)renderDetails(R,x);
   applyPos();
 }
 function renderWhy(R){
@@ -713,6 +737,55 @@ function condText(c){
   if(c.cond)return c.cond;
   var p=etp(c.t),night=p.h<6||p.h>=19;
   return c.sky<20?(night?'Clear':'Sunny'):c.sky<50?'Partly Cloudy':c.sky<80?'Mostly Cloudy':'Overcast';
+}
+
+function scoreCol(s){return s>=60?'var(--green)':s>=30?'var(--orange)':'var(--red)';}
+function renderDetails(R,cur){
+  var b=$('dpanel');clear(b);var sp=D.spot;
+  function sec(title){var s=h('div','dsec');s.appendChild(h('h3',null,title));b.appendChild(s);return s;}
+  var s1=sec('Location Ideal & Coastline');
+  add(s1,h('p',null,'swell '+sp.ideal.swell+' · wind '+sp.ideal.wind+' · tide '+sp.ideal.tide+' · size '+sp.ideal.size),
+    h('p','m','Coast faces '+cp(sp.facing)+' ('+sp.facing+'°). Offshore wind blows from '+cp(R.off)+' ('+Math.round(R.off)+'°). Swell window ≈ '+cp(sp.facing-75)+' to '+cp(sp.facing+75)+'.'));
+  var s2=sec('Shoaling / Breaking Waves');
+  var L0=R.P.L0,Hbm=Math.max(R.P.hb/M2FT,0.1),xi=(1/D.slopeN)/Math.sqrt(Hbm/L0),br=xi<0.5?'spilling':xi<3.3?'plunging':'surging',exp=Math.round(R.P.f*R.P.f*100);
+  add(s2,h('p',null,'Breaking wave ~'+f1(R.face)+' ft from '+f1(R.primary.h)+' ft open-water swell (primary, direction-adjusted '+f1(R.P.Hp*M2FT)+' ft, shoaling ×'+f1(R.shoal)+')'),
+    h('p','m','Hb ≈ 0.56·H′·(H′/L₀)^-0.2 per swell, energy-summed; H′ includes angular-spreading loss.'));
+  var s3=sec('Wave / Swell Energy');
+  cur.sw.forEach(function(s,i){
+    if(!s||!(s.h>0.05))return;
+    var hm=s.h/M2FT,e=0.49*hm*hm*s.p*s.p;
+    add(s3,h('p',null,['Primary','Secondary','Tertiary'][i]+': '+swellType(s.p)+' · '+f1(s.p)+' s · '+f1(s.h)+' ft '+cp(s.d)+' · energy '+Math.round(e)+' kJ per metre of crest'));
+  });
+  var s7=sec('Tide Schedule');
+  add(s7,h('p',null,D.live.tide?'Source: '+D.tideName+' · displayed in Eastern time.':'Live tide data unavailable — using a modeled semidiurnal tide.'),
+    h('p','m','Assigned: Block Island 8459338 (Trailer Park, Ditch Plains, White Sands, Napeague); Shinnecock 8512354 (Georgica, Gibson, Sagg Main). Fallbacks, nearest first: PRIMARY — Montauk 8510560, Block Island (Old Harbor) 8459338, Shinnecock Inlet 8512354; BACKUP — Block Island SW 8459681, New London 8461490, Ponquogue Point 8512451; then a modeled tide. Times are station local time (lst_ldt). Tide level between highs and lows is a cosine curve through the predicted extremes.'));
+  var s5=sec('Bathymetry');
+  add(s5,h('p',null,'seabed slope ~1:'+D.slopeN+' · '+br+' breakers · swell exposure '+exp+'%'),
+    h('p','m',sp.bottom+' · slope source: '+(D.slopeLive?'NOAA NCEI DEM (live, 150–900 m offshore)':'surveyed reference value (NOAA NCEI service unavailable)')+' · Iribarren ξ='+f1(xi)));
+  var s4=sec('Rating Rationale');
+  var lim=R.F.slice().sort(function(a,b){return b.loss-a.loss;})[0];
+  s4.appendChild(h('p',null,'Limited by: '+(lim.loss>=0.025?lim.name+' — '+lim.txt:'nothing significant')+(R.kill?' (kill switch active)':'')));
+  var t=document.createElement('table'),thr=document.createElement('tr'),thead=document.createElement('thead');
+  [['Factor',''],['Value',''],['Wt','n'],['Score','n'],['Pts','n']].forEach(function(c){thr.appendChild(h('th',c[1],c[0]));});thead.appendChild(thr);t.appendChild(thead);
+  var tot=0;
+  R.F.forEach(function(f){tot+=f.contrib;var tr=document.createElement('tr'),sc=Math.round(f.s*100),tdS=h('td','n',''+sc);tdS.style.color=scoreCol(sc);
+    add(tr,h('td',null,FN[f.k]||f.name),h('td',null,f.val.replace('open water','open')),h('td','n',''+f.w),tdS,h('td','n',f1(f.contrib)));t.appendChild(tr);});
+  var trT=document.createElement('tr');add(trT,h('td',null,'Total'),h('td',null,''),h('td','n','100'),h('td','n',''),h('td','n',f1(tot)));t.appendChild(trT);
+  s4.appendChild(t);
+  if(R.rating!==Math.round(tot*10)/10||R.caps.length)s4.appendChild(h('p','m','Rating after caps: '+f1(R.rating)+(R.caps.length?' — '+R.caps.join('; '):'')));
+  var s6=sec('Data Sources');
+  var t2=document.createElement('table'),h2=document.createElement('tr'),th2=document.createElement('thead');
+  [['Factor',''],['Source',''],['Status','n']].forEach(function(c){h2.appendChild(h('th',c[1],c[0]));});th2.appendChild(h2);t2.appendChild(th2);
+  D.src.forEach(function(s){var r=document.createElement('tr'),c3=h('td','dot'),dot=document.createElement('i');
+    dot.style.background=s.state==='ok'?'var(--green)':s.state==='mod'?'var(--orange)':'var(--red)';dot.setAttribute('role','img');dot.setAttribute('aria-label',s.state==='ok'?'OK':s.state==='mod'?'Pending':'Unavailable');c3.appendChild(dot);
+    var c2=h('td',null,s.name);if(s.updated||s.note)c2.appendChild(h('small',null,(s.updated?'Updated '+fmtNow(s.updated):'')+(s.updated&&s.note?' · ':'')+(s.note||'')));
+    add(r,h('td',null,s.role||'—'),c2,c3);t2.appendChild(r);});
+  var rm=document.createElement('tr'),c3=h('td','dot'),dm=document.createElement('i'),anyMod=D.modWaves||D.modWind||D.modTide;
+  dm.style.background=anyMod?'var(--orange)':'var(--green)';c3.appendChild(dm);
+  var c2m=h('td',null,'Modeled estimates');c2m.appendChild(h('small',null,anyMod?'In use: '+((D.modWaves?'waves ':'')+(D.modWind?'wind ':'')+(D.modTide?'tides':'')).trim():'Not needed'));
+  add(rm,h('td',null,'Fallback'),c2m,c3);t2.appendChild(rm);
+  s6.appendChild(t2);
+  add(s6,h('p','m','Current values: swell from '+D.curSrc.swell+'; wind from '+D.curSrc.wind+'. Hourly and outlook use model forecasts. Rating = multi-criteria weighted sum (wind dir 20, wind speed 15, primary period 20, direction 15, height 15, secondary swell 10, tide 5).'));
 }
 
 /* ---------- Interaction ---------- */
@@ -755,10 +828,17 @@ function initMenu(){
   btn.addEventListener('click',open);$('mclose').addEventListener('click',close);
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!m.hidden)close();});
 }
+function initDetails(){
+  var t=$('dtog'),p=$('dpanel');
+  t.addEventListener('click',function(){
+    var open=p.hidden;p.hidden=!open;t.setAttribute('aria-expanded',open?'true':'false');
+    if(open&&D){var d=dialData(sel);renderDetails(d.R,d.x);}
+  });
+}
 /* ---------- Init ---------- */
 function init(){
   $('nameTxt').textContent=dn(spot);
-  initDial();initMenu();
+  initDial();initMenu();initDetails();
   var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(layout,150);});
   setInterval(function(){if(!document.hidden&&!drag)load();},15*60*1000);
   load();
